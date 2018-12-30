@@ -1,5 +1,6 @@
 package com.example.semen.jwtlogin.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -20,15 +21,16 @@ import java.util.List;
 
 public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> implements Filterable{
 
+    private Context context;
     private List<Pet> pets;
-    private List<Pet> filteredPets;
-    private OnItemClickListener mItemClickListener;
+    private List<Pet> petListFiltered;
     List<Pet> petAdapter;
+    private ContactsAdapterListener listener;
 
 
     public PetAdapter(List<Pet> pets) {
         this.pets = pets;
-        this.filteredPets = pets;
+        this.petListFiltered = pets;
     }
 
     @NonNull
@@ -51,9 +53,9 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> i
             @Override
             public void onClick(View v) {
                 System.out.println(position);
-                Intent intent = new Intent(v.getContext(), PetActivity.class);
-                intent.putExtra("pet", pet);
-                v.getContext().startActivity(intent);
+//                Intent intent = new Intent(v.getContext(), PetActivity.class);
+//                intent.putExtra("pet", pet);
+//                v.getContext().startActivity(intent);
             }
         });
     }
@@ -63,68 +65,56 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> i
         return pets.size();
     }
 
-
-
     @Override
     public Filter getFilter() {
         return new Filter() {
             @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                String s= constraint.toString();
-                if (s.isEmpty()) {
-                    filteredPets=pets;
-
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    petListFiltered = pets;
                 } else {
-                    List<Pet> filteredPet = new ArrayList<>();
-                    for (Pet p: pets) {
-                        System.out.println(p.getId()+"   +GETNAME!!!!");
-                 if (p.getId().toString().equals(s.toLowerCase())) {
-                 filteredPet.add(p);
+                    List<Pet> filteredList = new ArrayList<>();
+                    for (Pet row : pets) {
 
-                 }
-                 }
+                        if (row.getName().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
+                    }
+                    petListFiltered = filteredList;
+                }
 
-                 filteredPets=filteredPet;
-                    System.out.println(filteredPets.toString()+" PETS STRING ~~~~~~~~~~~~~~~~~");
-             }
-             FilterResults filteredResults;
-                filteredResults = new FilterResults();
-                filteredResults.values = filteredPets;
-                return filteredResults;
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = petListFiltered;
+                return filterResults;
             }
 
             @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-            filteredPets = (List<Pet>) results.values;
-            notifyDataSetChanged();
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                petListFiltered = (List<Pet>) filterResults.values;
+                notifyDataSetChanged();
             }
         };
     }
 
-    public class PetViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class PetViewHolder extends RecyclerView.ViewHolder {
         TextView id;
         TextView name;
+        private ContactsAdapterListener listener;
 
         public PetViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
             id = itemView.findViewById(R.id.id);
             name = itemView.findViewById(R.id.name);
         }
-
-        @Override
-        public void onClick(View v) {
-            if (mItemClickListener != null) {
-                mItemClickListener.onItemClick(v, getAdapterPosition());
-            }
-        }
     }
 
-    public interface OnItemClickListener {
-        public void onItemClick(View view , int position);
+    public void setData(List<Pet> list){
+        this.pets = list;
+        notifyDataSetChanged();
     }
 
-    public void SetOnItemClickListener(final OnItemClickListener mItemClickListener) {
-        this.mItemClickListener = mItemClickListener;
+    public interface ContactsAdapterListener {
+        void onContactSelected(Pet pet);
     }
 }

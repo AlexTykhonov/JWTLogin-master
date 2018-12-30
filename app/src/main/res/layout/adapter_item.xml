@@ -18,9 +18,8 @@
         card_view:cardUseCompatPadding="true">
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="86dp"
         android:orientation="vertical">
 
         <TextView
@@ -31,7 +30,7 @@
             android:padding="1dp"
             android:text="ID of the item"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="16sp"
+            android:textSize="18dp"
             android:textStyle="bold" />
 
 
@@ -40,8 +39,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="1dp"
+            android:textSize="18dp"
             android:text="Name"
-            android:textColor="#55c5" />
+            android:textColor="#55676867" />
 
 
     </LinearLayout>

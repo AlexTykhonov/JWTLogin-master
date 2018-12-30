@@ -13,6 +13,7 @@ import com.example.semen.jwtlogin.managers.DataManager;
 import com.example.semen.jwtlogin.model.Login;
 import com.example.semen.jwtlogin.model.Pet;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,11 +81,8 @@ public class MainActivity extends AppCompatActivity {
                if (response.body()!= null ) {
                    pets.addAll(response.body());
                }
-
-                dataManager.getDaoSession().getPetDao().insertOrReplaceInTx(pets);
-
                 Intent intent = new Intent(getApplicationContext(), PetActivity.class);
-//                intent.putExtra("start", (Serializable) pets);
+                intent.putExtra("start", (Serializable) pets);
                 startActivity(intent);
             }
 
