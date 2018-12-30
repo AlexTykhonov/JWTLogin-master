@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:padding="1dp"
+            android:padding="3dp"
             android:text="ID of the item"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18dp"
@@ -38,10 +38,11 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="1dp"
-            android:textSize="18dp"
+            android:padding="3dp"
+            android:textSize="24dp"
+            android:textStyle="bold"
             android:text="Name"
-            android:textColor="#55676867" />
+            android:textColor="#55062df1" />
 
 
     </LinearLayout>

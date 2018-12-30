@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -23,31 +24,56 @@ public class PetActivity extends AppCompatActivity implements PetAdapter.Contact
     public DataManager dataManager;
     public PetAdapter petAdapter;
     SearchView searchView;
-
+    PetAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet);
         Bundle bundle = getIntent().getExtras();
-        if (bundle!=null) {
-           pets = (List<Pet>) getIntent().getSerializableExtra("start");
-            System.out.println(pets.size()+"?????????????????????????");
+        if (bundle != null) {
+            pets = (List<Pet>) getIntent().getSerializableExtra("start");
+            System.out.println(pets.size() + "?????????????????????????");
             petAdapter = new PetAdapter(pets);
-       }
+        }
 
         dataManager = DataManager.getInstance();
 
         recyclerView = findViewById(R.id.pets_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        System.out.println(pets+ "!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println(pets + "!!!!!!!!!!!!!!!!!!!!!!!!");
         recyclerView.setAdapter(petAdapter);
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = findViewById(R.id.searchView);
 
         CardView cardView = findViewById(R.id.card_view);
 
+        ///// 30.12
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = findViewById(R.id.searchView);
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        SearchView.OnQueryTextListener onQueryTextlistener = new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                System.out.println(query);
+                petAdapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                System.out.println(query+" THIS IS RESULT OF FILTERING WITHOUT SUBMITTING");
+                System.out.println(petAdapter+" THIS IS CONTENT OF OUR ADAPTER");
+                petAdapter.getFilter().filter(query);
+                return false;
+            }
+        };
+        searchView.setOnQueryTextListener(onQueryTextlistener);
+
+
+
+//    }
 //        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 //            @Override
 //            public boolean onQueryTextSubmit(String query) {
@@ -64,8 +90,8 @@ public class PetActivity extends AppCompatActivity implements PetAdapter.Contact
 //        });
     }
 
-    @Override
-    public void onContactSelected(Pet pet) {
-        Toast.makeText(getApplicationContext(), "Selected: " + pet.getName() + ", " + pet.getId(), Toast.LENGTH_LONG).show();
-    }
-}
+            @Override
+            public void onContactSelected(Pet pet) {
+                Toast.makeText(getApplicationContext(), "Selected: " + pet.getName() + ", " + pet.getId(), Toast.LENGTH_LONG).show();
+            }
+        }

@@ -42,12 +42,10 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> i
 
     @Override
     public void onBindViewHolder(@NonNull PetAdapter.PetViewHolder holder, final int position) {
-        final Pet pet = pets.get(position);
+        final Pet pet = petListFiltered.get(position);
 
         holder.id.setText("id: " + String.valueOf(pet.getId()));
         holder.name.setText("name: " + pet.getName());
-//        holder.age.setText("age: " + String.valueOf(pets.get(position).getAge()));
-//        holder.userId.setText("userId: " + String.valueOf(pets.get(position).getUserId()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,7 +60,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> i
 
     @Override
     public int getItemCount() {
-        return pets.size();
+        return petListFiltered.size();
     }
 
     @Override
@@ -75,13 +73,17 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> i
                     petListFiltered = pets;
                 } else {
                     List<Pet> filteredList = new ArrayList<>();
+                    System.out.println(pets.size()+"THIS IS PETS SIZE IN THE FILTERING");
                     for (Pet row : pets) {
-
-                        if (row.getName().toLowerCase().contains(charString.toLowerCase())) {
+                        System.out.println(row.getId()+"THIS IS ROW ID IN THE FILTERING!!!!!!!!!");
+                        System.out.println(charString);
+                        if (row.getId().toString().contains(charString.toLowerCase())) {
                             filteredList.add(row);
                         }
                     }
+                    System.out.println(filteredList.size()+ " А ЭТО НАШ ФИЛЬТРОВАНЫЙ ЛИСТ ПОСЛЕ ФИЛЬТРА"+filteredList);
                     petListFiltered = filteredList;
+                    System.out.println(petListFiltered+" <--!!!THIS OBJECT CONTAINS THE RESULT OF FILTERING !");
                 }
 
                 FilterResults filterResults = new FilterResults();
@@ -92,6 +94,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> i
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
                 petListFiltered = (List<Pet>) filterResults.values;
+                System.out.println(petListFiltered+" <--!!!THIS IS >>>>>>>> !!!!!! >>>>>PUBLISHED RESULT OF FILTERING !");
                 notifyDataSetChanged();
             }
         };

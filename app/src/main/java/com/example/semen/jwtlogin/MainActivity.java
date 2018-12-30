@@ -1,22 +1,24 @@
 package com.example.semen.jwtlogin;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.semen.jwtlogin.adapter.PetAdapter;
 import com.example.semen.jwtlogin.managers.DataManager;
 import com.example.semen.jwtlogin.model.Login;
 import com.example.semen.jwtlogin.model.Pet;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     public DataManager dataManager;
 
+    private SearchView searchView;
+    PetAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +52,9 @@ public class MainActivity extends AppCompatActivity {
         passwordTextInputLayout = findViewById(R.id.passwordTextInputLayout);
         button = findViewById(R.id.authenticate);
 
-
 //        pets = new ArrayList<>();
 
-
         dataManager = DataManager.getInstance();
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,4 +122,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }
