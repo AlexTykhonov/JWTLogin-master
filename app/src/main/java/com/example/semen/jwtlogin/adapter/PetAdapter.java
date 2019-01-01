@@ -3,6 +3,7 @@ package com.example.semen.jwtlogin.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 
 import com.example.semen.jwtlogin.PetActivity;
+import com.example.semen.jwtlogin.PetCalback;
 import com.example.semen.jwtlogin.R;
 import com.example.semen.jwtlogin.model.Pet;
 
@@ -26,6 +28,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> i
     private List<Pet> petListFiltered;
     List<Pet> petAdapter;
     private ContactsAdapterListener listener;
+    private List<Pet> mPet = new ArrayList<>();
 
 
     public PetAdapter(List<Pet> pets) {
@@ -112,10 +115,19 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.PetViewHolder> i
         }
     }
 
-    public void setData(List<Pet> list){
-        this.pets = list;
-        notifyDataSetChanged();
+    public void updatePetListItems(List<Pet> pet) {
+        final PetCalback diffCallback = new PetCalback(this.mPet, pet);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+
+        this.mPet.clear();
+        this.mPet.addAll(pet);
+        diffResult.dispatchUpdatesTo(this);
     }
+
+//    public void setData(List<Pet> list){
+//        this.pets = list;
+//        notifyDataSetChanged();
+//    }
 
     public interface ContactsAdapterListener {
         void onContactSelected(Pet pet);
