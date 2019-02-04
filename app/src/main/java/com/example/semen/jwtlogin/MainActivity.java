@@ -13,12 +13,17 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.semen.jwtlogin.adapter.PetAdapter;
+import com.example.semen.jwtlogin.api.Api;
+import com.example.semen.jwtlogin.controller.Controller;
 import com.example.semen.jwtlogin.managers.DataManager;
 import com.example.semen.jwtlogin.model.Login;
 import com.example.semen.jwtlogin.model.Pet;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public String passwordString;
 
     public DataManager dataManager;
-
+    public Api api;
     private SearchView searchView;
     PetAdapter mAdapter;
 
@@ -45,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        api = Controller.createService(Api.class);
         login = findViewById(R.id.login);
         loginTextInputLayout = findViewById(R.id.loginTextInputLayout);
         password = findViewById(R.id.password);
@@ -63,36 +68,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        list.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                list();
-//            }
-//        });
-
     }
 
     void list() {
-        Call<List<Pet>> call = dataManager.getApi().petList();
+        api.petList()
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::handleResult, this::onFailure);
 
-        call.enqueue(new Callback<List<Pet>>() {
-            @Override
-            public void onResponse(Call<List<Pet>> call, Response<List<Pet>> response) {
-                pets = new ArrayList<>();
-               if (response.body()!= null ) {
-                   pets.addAll(response.body());
-               }
-                Intent intent = new Intent(getApplicationContext(), PetActivity.class);
-                intent.putExtra("start", (Serializable) pets);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onFailure(Call<List<Pet>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Failure list", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
+    private void handleResult(List<Pet> pets1)
+        {
+            pets = new ArrayList<>();
+            if (pets1 != null ) {
+                pets.addAll(pets1);
+            }
+            System.out.println(pets+" THIS IS PETS WE ARE LOOKING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            Intent intent = new Intent(getApplicationContext(), PetActivity.class);
+            intent.putExtra("start", (Serializable) pets);
+            startActivity(intent);
+        }
+
+    private void onFailure(Throwable throwable) {
+        Toast.makeText(MainActivity.this, "Failure list", Toast.LENGTH_SHORT).show();
+    }
+
+
+
 
     void login() {
         loginString = login.getText().toString();
@@ -101,26 +103,27 @@ public class MainActivity extends AppCompatActivity {
         Login login = new Login(loginString, passwordString);
         System.out.println(loginString);
 
-        Call<ResponseBody> call = dataManager.getApi().login(login);
+        api.login(login)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::handleResult1, this::onFailure1);
+        }
 
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    token = response.headers().get("access-token");
-                    dataManager.getPreferencesManager().setAuthToken(token);
-                    list();
-                    Toast.makeText(MainActivity.this, dataManager.getPreferencesManager().getAuthToken(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Not successful", Toast.LENGTH_SHORT).show();
-                }
+        private void handleResult1(Response<ResponseBody> responseBody)
+        {
+            if (responseBody!=null) {
+                token = responseBody.headers().get("access-token");
+                dataManager.getPreferencesManager().setAuthToken(token);
+                list();
+
+                Toast.makeText(MainActivity.this, dataManager.getPreferencesManager().getAuthToken(), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "Not successful", Toast.LENGTH_SHORT).show();
             }
+        }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Failure", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+        private void onFailure1 (Throwable throwable) {
+            Toast.makeText(MainActivity.this, "Failure", Toast.LENGTH_SHORT).show();
+        }
 
-}
+        }
